@@ -5,9 +5,6 @@ TOKEN = DISCORD_BOT_TOKEN
 
 
 def get_discord():
-    print(f"TOKEN: {DISCORD_BOT_TOKEN[:20] if DISCORD_BOT_TOKEN else 'NENHUM'}...")
-    print(f"ID: {DISCORD_ID}")
-
     URL = f"https://discord.com/api/v10/users/{DISCORD_ID}"
     headers = {"Authorization": f"Bot {DISCORD_BOT_TOKEN}"}
 
