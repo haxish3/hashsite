@@ -12,9 +12,6 @@ def get_discord():
     headers = {"Authorization": f"Bot {DISCORD_BOT_TOKEN}"}
 
     response = requests.get(URL, headers=headers)
-    
-    print(f"STATUS: {response.status_code}")
-    print(f"RESPONSE: {response.text[:200] if response.text else 'VAZIO'}")
 
     if response.status_code != 200:
         return {"error": "falhou", "username": "hash", "global_name": "hash", "avatar": None}
