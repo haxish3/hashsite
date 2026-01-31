@@ -55,7 +55,7 @@ def get_spotify():
     token = get_access_token()
 
     if not token:
-        return {{"playing": False, "error": "token falhou"}}
+        return {"playing": False, "error": "token falhou"}
 
     response = requests.get(
         "https://api.spotify.com/v1/me/player/currently-playing",
