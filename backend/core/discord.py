@@ -12,6 +12,12 @@ def get_discord():
     headers = {"Authorization": f"Bot {DISCORD_BOT_TOKEN}"}
 
     response = requests.get(URL, headers=headers)
+    
+    print(f"STATUS: {response.status_code}")
+    print(f"RESPONSE: {response.text[:200] if response.text else 'VAZIO'}")
+
+    if response.status_code != 200:
+        return {"error": "falhou", "username": "hash", "global_name": "hash", "avatar": None}
 
     data = response.json()
 
@@ -21,8 +27,12 @@ def get_discord():
 
     link = (
         f"https://cdn.discordapp.com/avatars/{DISCORD_ID}/{avatar}.png"
-        if avatar
+        if avatar 
         else None
     )
 
-    return {"username": userName, "global_name": globalName, "avatar": link}
+    return {
+        "username": userName,
+        "global_name": globalName,
+        "avatar": link
+    }
