@@ -1,11 +1,12 @@
-import spotipy
-import requests
 from io import BytesIO
-from spotipy import SpotifyOAuth
+import requests
+import base64
+import os
 from colorthief import ColorThief
-from config import SPOTIFY_CLIENT, SPOTIFY_SECRET, SPOTIFY_REDIRECT
+from config import SPOTIFY_CLIENT, SPOTIFY_SECRET
 
 SCOPE_READ = "user-read-currently-playing"
+REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 
 
 def get_color(imgURL):
@@ -18,54 +19,59 @@ def get_color(imgURL):
     except:  # noqa
         return "30, 30, 30"
 
+
 def opacityUpdate(rgb):
     r, g, b = rgb.split(",")
     lumin = 0.299 * int(r) + 0.587 * int(g) + 0.114 * int(b)
-    
+
     opacity = 0.25 - (lumin / 255) * 0.22
     opacity = max(0.08, min(0.25, opacity))
-    
-    return f"rgba({r}, {g}, {b}, {opacity})"
+
+    return f"rgba({r}, {g}, {b}, {opacity:.2f})"
+
+
+def get_access_token():
+    auth = base64.b64encode(f"{SPOTIFY_CLIENT}:{SPOTIFY_SECRET}".encode()).decode()
+
+    response = requests.post(
+        "https://accounts.spotify.com/api/token",
+        headers={
+            "Authorization": f"Basic {auth}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data={"grant_type": "refresh_token", "refresh_token": REFRESH_TOKEN},
+    )
+
+    return response.json()["access_token"]
 
 
 def get_spotify():
-    sp = spotipy.Spotify(
-        oauth_manager=SpotifyOAuth(
-            client_id=SPOTIFY_CLIENT,
-            client_secret=SPOTIFY_SECRET,
-            redirect_uri=SPOTIFY_REDIRECT,
-            scope=SCOPE_READ,
-        )
+    token = get_access_token()
+
+    response = requests.get(
+        "https://api.spotify.com/v1/me/player/currently-playing",
+        headers={"Authorization": f"Bearer {token}"},
     )
 
-    track = sp.current_user_playing_track()
-
-    if not track:
+    if response.status_code != 200 or not response.content:
         return {"playing": False}
 
-    is_playing = track["is_playing"]
+    track = response.json()
 
-    if is_playing:
-        trackName = track["item"]["name"]
-        artistName = track["item"]["artists"][0]["name"]
-        albumCover = track["item"]["album"]["images"][0]["url"]
+    if not track or not track.get("is_playing"):
+        return {"playing": False}
 
-        duration = track["item"]["duration_ms"] // 1000
-        progress = track["progress_ms"] // 1000
-        trackId = track["item"]["id"]
+    item = track["item"]
 
-        link = f"https://open.spotify.com/track/{trackId}"
-
-        rgb = get_color(albumCover)
-
-        return {
-            "playing": is_playing,
-            "track": trackName,
-            "artist": artistName,
-            "album_cover": albumCover,
-            "track_url": link,
-            "progress": {"current": progress, "total": duration},
-            "color": opacityUpdate(rgb)
-        }
-    else:
-        return {"playing": is_playing}
+    return {
+        "playing": True,
+        "track": item["name"],
+        "artist": item["artists"][0]["name"],
+        "album_cover": item["album"]["images"][0]["url"],
+        "track_url": f"https://open.spotify.com/track/{item['id']}",
+        "progress": {
+            "current": track["progress_ms"] // 1000,
+            "total": item["duration_ms"] // 1000,
+        },
+        "color": opacityUpdate(get_color(item["album"]["images"][0]["url"]))
+    }
