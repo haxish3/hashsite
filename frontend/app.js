@@ -1,5 +1,4 @@
-
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://hashapi-b8nk.onrender.com";
 
 // --- Dados hardcoded (fallback) ---
 const FALLBACK = {
@@ -32,6 +31,7 @@ const SOCIAL_LINKS = {
   github: "https://github.com/haxish3",
 };
 
+// --- Funções de fetch ---
 async function get(url) {
   const res = await fetch(url, { method: "GET" });
   if (!res.ok) throw new Error(`GET ${url} ${res.status}`);
@@ -44,6 +44,7 @@ async function post(url) {
   return res.json();
 }
 
+// --- Discord ---
 async function loadDiscord() {
   try {
     const data = await get(`${API_BASE}/api/discord`);
@@ -68,6 +69,7 @@ function renderDiscord(data) {
   usernameEl.textContent = username;
 }
 
+// --- Spotify ---
 async function loadSpotify() {
   try {
     const data = await get(`${API_BASE}/api/spotify`);
@@ -96,7 +98,7 @@ function renderSpotify(data) {
   const currentEl = document.getElementById("spotify-current");
   const totalEl = document.getElementById("spotify-total");
   const via = document.getElementById("spotify-via");
-  const link = document.getElementById("spotify-link")
+  const link = document.getElementById("spotify-link");
   const card = document.querySelector(".card");
 
   const hasTrack = data.track || data.artist;
@@ -120,7 +122,7 @@ function renderSpotify(data) {
   cover.alt = data.track || "";
   track.textContent = data.track || "—";
   artist.textContent = data.artist || "—";
-  link.href = data.track_url || "open.spotify.com"
+  link.href = data.track_url || "open.spotify.com";
   card.style.setProperty("--color", data.color);
 
   const progress = data.progress;
@@ -144,6 +146,63 @@ function renderSpotify(data) {
   }
 }
 
+// --- Spotify: sistema de polling inteligente ---
+
+// estado local do spotify (cache no navegador)
+let spotifyCache = null;
+let tickInterval = null;    // ticker que roda a cada 1s no frontend (sem chamar a API)
+let pollInterval = null;    // timer de 30s que busca dados frescos da API
+let endTimeout = null;      // timer que dispara quando a música vai acabar
+
+// atualiza apenas a barra e o tempo no frontend, sem chamar a API
+function tickSpotify() {
+  if (!spotifyCache || !spotifyCache.playing) return;
+  if (!spotifyCache.progress) return;
+
+  spotifyCache.progress.current += 1;
+
+  // se ultrapassou a duração, a música acabou → busca dados frescos
+  if (spotifyCache.progress.current >= spotifyCache.progress.total) {
+    stopSpotifyTimers();
+    fetchAndRenderSpotify();
+    return;
+  }
+
+  // atualiza só a barra e os timestamps visualmente
+  const pct = Math.min(100, (spotifyCache.progress.current / spotifyCache.progress.total) * 100);
+  document.getElementById("spotify-progress-fill").style.width = `${pct}%`;
+  document.getElementById("spotify-current").textContent = fmtTime(spotifyCache.progress.current);
+}
+
+// para todos os timers do spotify
+function stopSpotifyTimers() {
+  if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
+  if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+  if (endTimeout) { clearTimeout(endTimeout); endTimeout = null; }
+}
+
+// busca dados frescos da API e re-renderiza tudo
+async function fetchAndRenderSpotify() {
+  const data = await loadSpotify();
+  spotifyCache = data;
+  renderSpotify(data);
+  startSpotifyTimers();
+}
+
+// inicia os timers baseado no estado atual
+function startSpotifyTimers() {
+  stopSpotifyTimers(); // limpa qualquer timer antigo
+
+  if (!spotifyCache || !spotifyCache.playing) return;
+
+  // ticker local: incrementa o progresso a cada 1 segundo
+  tickInterval = setInterval(tickSpotify, 1000);
+
+  // poll a cada 30 segundos: busca dados frescos da API
+  pollInterval = setInterval(fetchAndRenderSpotify, 30000);
+}
+
+// --- Roblox ---
 async function loadRoblox() {
   try {
     const data = await get(`${API_BASE}/api/roblox`);
@@ -181,8 +240,8 @@ function renderRoblox(data) {
   join.href = joinLink;
   image.src = imageUrl;
   join.hidden = false;
-  Rcolor.style.setProperty("--Rcolor", data.Rcolor)
-  elapse.textContent = formatTime(time)
+  Rcolor.style.setProperty("--Rcolor", data.Rcolor);
+  elapse.textContent = formatTime(time);
 }
 
 function formatTime(seconds) {
@@ -195,6 +254,31 @@ function formatTime(seconds) {
   else return `${s} sec`;
 }
 
+// --- Roblox: polling simples a cada 60s ---
+let intervalRoblox = null;
+
+async function updateCardR() {
+  const roblox = await loadRoblox();
+  renderRoblox(roblox);
+
+  // se não tá jogando, para o intervalo
+  if (!roblox.playing && intervalRoblox) {
+    clearInterval(intervalRoblox);
+    intervalRoblox = null;
+  }
+}
+
+function startRobloxPolling(data) {
+  if (intervalRoblox) clearInterval(intervalRoblox);
+
+  if (data.playing) {
+    intervalRoblox = setInterval(updateCardR, 60000);
+  } else {
+    intervalRoblox = null;
+  }
+}
+
+// --- Visitas ---
 async function loadVisitas() {
   try {
     const data = await get(`${API_BASE}/api/visit`);
@@ -209,45 +293,7 @@ function renderVisitas(count) {
   el.textContent = typeof count === "number" ? count.toLocaleString("pt-BR") : "—";
 }
 
-async function updateCardS() {
-  const spotify = await loadSpotify()
-  renderSpotify(spotify)
-}
-
-async function updateCardR() {
-  const roblox = await loadRoblox()
-  renderRoblox(roblox)
-}
-
-let intervalRoblox = null;
-let intervalSpotify = null;
-
-async function updateCards() {
-  const roblox = await loadRoblox();
-
-  if (roblox.playing) {
-    if (intervalRoblox) clearInterval(intervalRoblox);
-    intervalRoblox = setInterval(updateCardR, 60000);
-  } else {
-    if (intervalRoblox) {
-      clearInterval(intervalRoblox);
-      intervalRoblox = null;
-    }
-  }
-
-  const spotify = await loadSpotify();
-
-  if (spotify.playing) {
-    if (intervalSpotify) clearInterval(intervalSpotify);
-    intervalSpotify = setInterval(updateCardS, 1000);
-  } else {
-    if (intervalSpotify) {
-      clearInterval(intervalSpotify);
-      intervalSpotify = null;
-    }
-  }
-}
-
+// --- Social links ---
 function applySocialLinks() {
   const discord = document.getElementById("social-discord");
   const roblox = document.getElementById("social-roblox");
@@ -259,6 +305,7 @@ function applySocialLinks() {
   if (github) github.href = SOCIAL_LINKS.github;
 }
 
+// --- Init ---
 async function init() {
   const [discord, spotify, roblox, visits] = await Promise.all([
     loadDiscord(),
@@ -273,7 +320,10 @@ async function init() {
   renderVisitas(visits);
   applySocialLinks();
 
-  updateCards()
+  // inicia os sistemas de polling
+  spotifyCache = spotify;
+  startSpotifyTimers();
+  startRobloxPolling(roblox);
 }
 
 init();
