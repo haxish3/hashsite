@@ -42,11 +42,20 @@ def get_access_token():
         data={"grant_type": "refresh_token", "refresh_token": REFRESH_TOKEN},
     )
 
-    return response.json()["access_token"]
+    data = response.json()
+
+    if "access_token" not in data:
+        print(f"ERRO SPOTIFY: {data}")
+        return None
+
+    return data["access_token"]
 
 
 def get_spotify():
     token = get_access_token()
+
+    if not token:
+        return {{"playing": False, "error": "token falhou"}}
 
     response = requests.get(
         "https://api.spotify.com/v1/me/player/currently-playing",
@@ -73,5 +82,5 @@ def get_spotify():
             "current": track["progress_ms"] // 1000,
             "total": item["duration_ms"] // 1000,
         },
-        "color": opacityUpdate(get_color(item["album"]["images"][0]["url"]))
+        "color": opacityUpdate(get_color(item["album"]["images"][0]["url"])),
     }
