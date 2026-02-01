@@ -145,15 +145,6 @@ img {
   align-self: center;
 }
 
-.spotify-live-pill {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #1db954;
-  padding: 0.25rem 0.6rem;
-  background: rgba(29, 185, 84, 0.15);
-  border-radius: 9999px;
-}
-
 .main-profile {
   display: flex;
   align-items: center;
@@ -244,15 +235,6 @@ img {
   margin-bottom: 1.25rem;
 }
 
-.spotify-live-pill {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #1db954;
-  padding: 0.2rem 0.5rem;
-  background: rgba(29, 185, 84, 0.12);
-  border-radius: 9999px;
-}
-
 .spotify-body {
   display: flex;
   gap: 1.25rem;
@@ -332,12 +314,53 @@ img {
   margin-bottom: 0.35rem;
 }
 
+.spotify-live-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 5px;
+  background-color: rgba(28, 63, 29, 0.375);
+  border: 1px solid rgba(76, 175, 80, 0.7);
+  border-radius: 20px;
+}
+
+.spotify-live-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1db954;
+
+}
+
+.spotify-live-pulse {
+  width: 0.3rem;
+  height: 0.3rem;
+  background-color: rgb(76, 175, 80);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
 .spotify-progress-fill {
   height: 100%;
-  width: 0%;
-  background: #1db954;
+  background: #4caf50;
   border-radius: 2px;
-  transition: width 0.3s ease;
+  transition: width 0.3s linear;
 }
 
 .spotify-timestamps {

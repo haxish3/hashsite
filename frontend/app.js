@@ -83,7 +83,7 @@ function fmtTime(sec) {
 
 function renderSpotify(data) {
   const headerLabel = document.getElementById("spotify-header-label");
-  const livePill = document.getElementById("spotify-live-pill");
+  const livePill = document.getElementById("spotify-live-wrapper");
   const body = document.getElementById("spotify-body");
   const empty = document.getElementById("spotify-empty");
   const cover = document.getElementById("spotify-cover");
