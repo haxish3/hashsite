@@ -1,8 +1,10 @@
 from fastapi import FastAPI
-from core import get_roblox, get_spotify, get_discord, get_visit
+from core import get_roblox, get_spotify, get_discord, get_visit, set_status, get_OnoF
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -11,19 +13,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/api/")
 def _teste():
-    return {"Online": True}
+    return {"online": True}
 
 
 @app.get("/api/roblox")
 def _roblox():
-    return get_roblox()
+    if get_OnoF():
+        return get_roblox()
+    else:
+        return {"online": False}
 
 
 @app.get("/api/spotify")
 def _spotify():
-    return get_spotify()
+    if get_OnoF():
+        return get_spotify()
+    else:
+        return {"playing": False}
 
 
 @app.get("/api/discord")
@@ -38,13 +47,9 @@ def _get_visit():
 
 @app.get("/api/status")
 def _get_all():
-    spotify = get_spotify().get("playing")
-    roblox = get_roblox().get("online")
-    print(roblox, spotify)
+    return "mesa"
 
-    online = spotify or roblox
 
-    return {
-        "online": online,
-        "activity": "roblox" if roblox else "spotify" if spotify else None,
-    }
+@app.post("/api/toggle")
+def _toggle(status: bool):
+    return set_status(status)

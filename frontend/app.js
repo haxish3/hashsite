@@ -1,4 +1,4 @@
-const API_BASE = "https://hashapi-b8nk.onrender.com";
+const API_BASE = "http://localhost:8000";
 
 const FALLBACK = {
   discord: {
@@ -168,7 +168,7 @@ function tickSpotify() {
 function stopSpotifyTimers() {
   if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
   if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
-  if (endTimeout)   { clearTimeout(endTimeout);    endTimeout = null; }
+  if (endTimeout) { clearTimeout(endTimeout); endTimeout = null; }
 }
 
 async function fetchAndRenderSpotify() {
