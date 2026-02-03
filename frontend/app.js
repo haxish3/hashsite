@@ -1,4 +1,4 @@
-const API_BASE = "https://hashapi-b8nk.onrender.com";
+const API_BASE = "http://localhost:8000";
 
 const FALLBACK = {
   discord: {
@@ -181,11 +181,14 @@ async function fetchAndRenderSpotify() {
 function startSpotifyTimers() {
   stopSpotifyTimers();
 
-  if (!spotifyCache || !spotifyCache.playing) return;
+  if (!spotifyCache || !spotifyCache.playing) {
+    pollInterval = setInterval(fetchAndRenderSpotify, 10000);
+    return
+  }
 
   tickInterval = setInterval(tickSpotify, 1000);
 
-  pollInterval = setInterval(fetchAndRenderSpotify, 10000);
+  pollInterval = setInterval(fetchAndRenderSpotify, 5000);
 }
 
 async function loadRoblox() {
@@ -245,19 +248,15 @@ async function updateCardR() {
   const roblox = await loadRoblox();
   renderRoblox(roblox);
 
-  if (!roblox.playing && intervalRoblox) {
-    clearInterval(intervalRoblox);
-    intervalRoblox = null;
-  }
 }
 
 function startRobloxPolling(data) {
   if (intervalRoblox) clearInterval(intervalRoblox);
 
   if (data.playing) {
-    intervalRoblox = setInterval(updateCardR, 60000);
+    intervalRoblox = setInterval(updateCardR, 30000);
   } else {
-    intervalRoblox = null;
+    intervalRoblox = setInterval(updateCardR, 120000);
   }
 }
 
