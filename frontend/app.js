@@ -182,13 +182,13 @@ function startSpotifyTimers() {
   stopSpotifyTimers();
 
   if (!spotifyCache || !spotifyCache.playing) {
-    pollInterval = setInterval(fetchAndRenderSpotify, 10000);
+    pollInterval = setInterval(fetchAndRenderSpotify, 60000);
     return
   }
 
   tickInterval = setInterval(tickSpotify, 1000);
 
-  pollInterval = setInterval(fetchAndRenderSpotify, 5000);
+  pollInterval = setInterval(fetchAndRenderSpotify, 10000);
 }
 
 async function loadRoblox() {
@@ -254,9 +254,9 @@ function startRobloxPolling(data) {
   if (intervalRoblox) clearInterval(intervalRoblox);
 
   if (data.playing) {
-    intervalRoblox = setInterval(updateCardR, 30000);
+    intervalRoblox = setInterval(updateCardR, 15000);
   } else {
-    intervalRoblox = setInterval(updateCardR, 120000);
+    intervalRoblox = setInterval(updateCardR, 60000);
   }
 }
 
