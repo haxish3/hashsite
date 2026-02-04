@@ -1,4 +1,5 @@
-const API_BASE = "https://hashapi-b8nk.onrender.com";
+const API_BASE = "http://localhost:8000";
+// const API_BASE = "https://hashapi-b8nk.onrender.com"
 
 const FALLBACK = {
   discord: {
@@ -97,6 +98,7 @@ function renderSpotify(data) {
   const link = document.getElementById("spotify-link");
   const card = document.querySelector(".card");
 
+
   const hasTrack = data.track || data.artist;
   const playing = !!data.playing;
 
@@ -108,7 +110,7 @@ function renderSpotify(data) {
     headerLabel.textContent = "🎵 Spotify";
     return;
   }
-
+  
   body.hidden = false;
   empty.hidden = true;
   livePill.hidden = !playing;

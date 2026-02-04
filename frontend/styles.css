@@ -62,14 +62,14 @@ img {
 
 @property --color {
   syntax: '<color>';
-  initial-value: rgba(0,0,0,0);
+  initial-value: rgba(0, 0, 0, 0);
   inherits: false;
 }
 
 .card {
   background: linear-gradient(45deg, var(--color) 0%, rgba(0, 0, 0, 0) 60%);
   backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(32px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.25rem !important;
   padding: 1rem !important;
@@ -280,18 +280,25 @@ img {
   margin-bottom: 0.25rem;
 }
 
+.spotify-link {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  display: block;
+}
 
 .spotify-track {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 0.35rem;
+  margin: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline-block;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .spotify-track:hover {
@@ -323,11 +330,11 @@ img {
 .spotify-live-wrapper {
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 5px;
+  gap: 6px;
+  padding: 2px 3px;
   background-color: rgba(28, 63, 29, 0.375);
   border: 1px solid rgba(76, 175, 80, 0.7);
-  border-radius: 20px;
+  border-radius: 0.6rem !important;
 }
 
 .spotify-live-pill {
@@ -399,8 +406,8 @@ img {
 }
 
 @property --Rcolor {
-  syntax: '<Rcolor>';
-  initial-value: rgba(0,0,0,0);
+  syntax: '<color>';
+  initial-value: rgba(0, 0, 0, 0);
   inherits: false;
 }
 
