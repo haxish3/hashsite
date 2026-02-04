@@ -1,12 +1,16 @@
+from config import SPOTIFY_CLIENT, SPOTIFY_SECRET
+from colorthief import ColorThief
+from pathlib import Path
 from io import BytesIO
 import requests
 import base64
+import json
 import os
-from colorthief import ColorThief
-from config import SPOTIFY_CLIENT, SPOTIFY_SECRET
 
-SCOPE_READ = "user-read-currently-playing"
+
 REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
+
+path = Path("data/history_spot.json")
 
 
 def get_color(imgURL):
@@ -56,7 +60,7 @@ def get_spotify():
     token = get_access_token()
 
     if not token:
-        return {"playing": False, "error": "token falhou"}
+        return {"playing": False, "error": "token failure"}
 
     response = requests.get(
         "https://api.spotify.com/v1/me/player/currently-playing",
@@ -64,12 +68,32 @@ def get_spotify():
     )
 
     if response.status_code != 200 or not response.content:
-        return {"playing": False}
+        track = {"is_playing": False}
+    else:
+        track = response.json()
 
-    track = response.json()
+    if track["is_playing"]:
+        with path.open("w") as f:
+            json.dump(track, f, indent=4)
 
-    if not track or not track.get("is_playing"):
-        return {"playing": False}
+    if not track["is_playing"]:
+        with path.open("r") as f:
+            try:
+                data = json.load(f)
+                item = data["item"]
+            except Exception as e:
+                print(f"ERROR: Spotify history. '{e}'")
+                return {"playing": False, "history": False}
+
+            return {
+                "playing": False,
+                "history": True,
+                "track": item["name"],
+                "artist": item["artists"][0]["name"],
+                "album_cover": item["album"]["images"][0]["url"],
+                "track_url": item["external_urls"],
+                "color": "rgba(0, 0, 0, 0)",
+            }
 
     item = track["item"]
 
@@ -78,7 +102,7 @@ def get_spotify():
         "track": item["name"],
         "artist": item["artists"][0]["name"],
         "album_cover": item["album"]["images"][0]["url"],
-        "track_url": f"https://open.spotify.com/track/{item['id']}",
+        "track_url": item["external_urls"],
         "progress": {
             "current": track["progress_ms"] // 1000,
             "total": item["duration_ms"] // 1000,
