@@ -5,5 +5,4 @@ __pycache__/
 .spotify_caches/
 venv/
 .gitignore
-backend/data/
 ideias.txt
