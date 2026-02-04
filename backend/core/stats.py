@@ -21,21 +21,28 @@ def get_visit():
 
 
 def set_status(status: bool):
-    with path.open("r") as f:
-        data = json.load(f)
+    if path.exists():
+        with path.open("r") as f:
+            data = json.load(f)
+    else:
+        data = {"api_enabled": status}
 
-    data["status"] = status
+    data["api_enabled"] = status
 
     with path.open("w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
-    if status:
-        return {"success": "api on"}
-    else:
-        return {"success": "api off"}
+    return {"msg": f"success: api {'online' if status else 'offline'}"}
+
 
 def get_OnoF():
-    with path.open("r") as f:
-        stt = json.load(f)["status"]
+    if path.exists():
+        with path.open("r") as f:
+            try:
+                stt = json.load(f)["api_enabled"]
+            except Exception as e:
+                return False
+                print(f"ERROR: 'get_OnoF': {e}")
 
-    return stt
+        return stt
+    return False
