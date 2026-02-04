@@ -24,8 +24,9 @@ def opacityUpdate(rgb):
     r, g, b = rgb.split(",")
     lumin = 0.299 * int(r) + 0.587 * int(g) + 0.114 * int(b)
 
-    opacity = 0.25 - (lumin / 255) * 0.22
-    opacity = max(0.08, min(0.25, opacity))
+    opc = 0.25
+    opacity = opc - (lumin / 255) * 0.22
+    opacity = max(0.08, min(opc, opacity))
 
     return f"rgba({r}, {g}, {b}, {opacity:.2f})"
 

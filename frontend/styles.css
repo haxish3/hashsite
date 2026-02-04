@@ -60,6 +60,12 @@ img {
   box-shadow: #000000;
 }
 
+@property --color {
+  syntax: '<color>';
+  initial-value: rgba(0,0,0,0);
+  inherits: false;
+}
+
 .card {
   background: linear-gradient(45deg, var(--color) 0%, rgba(0, 0, 0, 0) 60%);
   backdrop-filter: blur(32px);
@@ -67,7 +73,7 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.25rem !important;
   padding: 1rem !important;
-  transition: all 0.3s ease;
+  transition: --color 1s ease-in-out;
 }
 
 .card:hover {
@@ -392,9 +398,16 @@ img {
   color: rgba(255, 255, 255, 0.5);
 }
 
+@property --Rcolor {
+  syntax: '<Rcolor>';
+  initial-value: rgba(0,0,0,0);
+  inherits: false;
+}
+
 .card-roblox {
   background: linear-gradient(45deg, var(--Rcolor) 0%, #00000000 70%);
   padding: 1.75rem 2rem;
+  transition: --Rcolor 0.5s ease-in-out;
 }
 
 .roblox-body {

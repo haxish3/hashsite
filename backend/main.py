@@ -16,7 +16,7 @@ app.add_middleware(
 
 @app.get("/api/")
 def _teste():
-    return {"online": True}
+    return {"online": get_OnoF()}
 
 
 @app.get("/api/roblox")

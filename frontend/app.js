@@ -1,4 +1,4 @@
-const API_BASE = "https://hashapi-b8nk.onrender.com";
+const API_BASE = "http://localhost:8000";
 
 const FALLBACK = {
   discord: {
@@ -235,11 +235,9 @@ function renderRoblox(data) {
 function formatTime(seconds) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
 
   if (h > 0) return `${h}h ${m}m`;
-  else if (m > 0) return `${m} min`;
-  else return `${s} sec`;
+  else return `${m} min`;
 }
 
 let intervalRoblox = null;
@@ -254,9 +252,9 @@ function startRobloxPolling(data) {
   if (intervalRoblox) clearInterval(intervalRoblox);
 
   if (data.playing) {
-    intervalRoblox = setInterval(updateCardR, 15000);
+    intervalRoblox = setInterval(updateCardR, 30000);
   } else {
-    intervalRoblox = setInterval(updateCardR, 60000);
+    intervalRoblox = setInterval(updateCardR, 55000);
   }
 }
 
