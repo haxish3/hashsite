@@ -1,5 +1,5 @@
 // const API_BASE = "http://localhost:8000";
-const API_BASE = "https://hashapi-b8nk.onrender.com"
+const API_BASE = "https://hashsite.onrender.com"
 
 const FALLBACK = {
   discord: {
