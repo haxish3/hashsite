@@ -1,5 +1,5 @@
 // const API_BASE = "http://localhost:8000";
-const API_BASE = "https://hashsite.onrender.com"
+const API_BASE = "api.hwsh.com"
 
 const FALLBACK = {
   discord: {
@@ -45,7 +45,7 @@ async function post(url) {
 
 async function loadDiscord() {
   try {
-    const data = await get(`${API_BASE}/api/discord`);
+    const data = await get(`${API_BASE}/discord`);
     return data;
   } catch {
     return FALLBACK.discord;
@@ -69,7 +69,7 @@ function renderDiscord(data) {
 
 async function loadSpotify() {
   try {
-    const data = await get(`${API_BASE}/api/spotify`);
+    const data = await get(`${API_BASE}/spotify`);
     return data;
   } catch {
     return FALLBACK.spotify;
@@ -195,7 +195,7 @@ function startSpotifyTimers() {
 
 async function loadRoblox() {
   try {
-    const data = await get(`${API_BASE}/api/roblox`);
+    const data = await get(`${API_BASE}/roblox`);
     return data;
   } catch {
     return FALLBACK.roblox;
@@ -262,7 +262,7 @@ function startRobloxPolling(data) {
 
 async function loadVisitas() {
   try {
-    const data = await get(`${API_BASE}/api/visit`);
+    const data = await get(`${API_BASE}/visit`);
     return data.visits ?? FALLBACK.visitas;
   } catch {
     return FALLBACK.visitas;
