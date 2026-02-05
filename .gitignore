@@ -6,4 +6,4 @@ __pycache__/
 venv/
 backend/data/*
 !backend/data/.gitkeep
-ideias.txtga
+ideias.txt
