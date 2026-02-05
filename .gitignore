@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .cache
 .spotify_caches/
-venv/
-backend/data/*
-!backend/data/.gitkeep
+.venv/
+back/data/*
+!back/data/.gitkeep
 ideias.txt
