@@ -1,6 +1,0 @@
-fastapi
-uvicorn[standard]
-spotipy
-requests
-colorthief
-python-dotenv
