@@ -86,7 +86,7 @@ def get_spotify():
                 "track": item["name"],
                 "artist": item["artists"][0]["name"],
                 "album_cover": item["album"]["images"][0]["url"],
-                "track_url": item["external_urls"],
+                "track_url": item["external_urls"]["spotify"],
                 "color": "rgba(0, 0, 0, 0)",
             }
         except FileNotFoundError:
@@ -100,7 +100,7 @@ def get_spotify():
         "track": item["name"],
         "artist": item["artists"][0]["name"],
         "album_cover": item["album"]["images"][0]["url"],
-        "track_url": item["external_urls"],
+        "track_url": item["external_urls"]["spotify"],
         "progress": {
             "current": track["progress_ms"] // 1000,
             "total": item["duration_ms"] // 1000,
