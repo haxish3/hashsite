@@ -1,4 +1,0 @@
-TALVEZ: {trocar o card de spotify pra card de "rich presence", algo nesse sentido. detectar oq to mechendo: alguns apps especificos setados manual-
-mente pra por como "RPC"; fazer alguma especie de botao pro usuario poder trocar o card: caso esteja usando o code oss, ter um botaozinho "ouvindo 
-spotify" ou algo com o nome da musica, assim, de canto; caso a pessoa clique, o card muda pro da msc e vise e versa. auto setar imagensdo rpc,
-ou rumar um jeito do script rodando no meu pc pegar auto e enviar pra la (creio q setar manual seja mais facil)...}
