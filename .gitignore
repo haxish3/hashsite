@@ -4,5 +4,6 @@ __pycache__/
 .cache
 .spotify_caches/
 venv/
-data/*
-ideias.txt
+backend/data/*
+!backend/data/.gitkeep
+ideias.txtga
