@@ -71,16 +71,11 @@ def get_spotify():
         track = {"is_playing": False}
     else:
         track = response.json()
+        item = track["item"]
 
     if track["is_playing"]:
         with path.open("w") as f:
-            json.dump(track, f, indent=4)
-    else:
-        try:
-            with path.open("r") as f:
-                data = json.load(f)
-                item = data["item"]
-            return {
+            data = {
                 "playing": False,
                 "history": True,
                 "track": item["name"],
@@ -89,11 +84,15 @@ def get_spotify():
                 "track_url": item["external_urls"]["spotify"],
                 "color": "rgba(0, 0, 0, 0)",
             }
+            json.dump(data, f, indent=4)
+    else:
+        try:
+            with path.open("r") as f:
+                data = json.load(f)
+            return data
         except FileNotFoundError:
             print("ERROR SPOTIFY:     history not found")
             return {"playing": False, "history": False}
-
-    item = track["item"]
 
     return {
         "playing": True,

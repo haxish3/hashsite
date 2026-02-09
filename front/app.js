@@ -1,6 +1,6 @@
-// const API_BASE = "http://localhost:8000";
-const API_BASE = "https://api.hwsh.rest"
-//vai
+const API_BASE = "http://localhost:8000";
+// const API_BASE = "https://api.hwsh.rest"
+
 const FALLBACK = {
   discord: {
     username: "hash",
@@ -99,6 +99,7 @@ function renderSpotify(data) {
   const card = document.querySelector(".card");
 
 
+
   const hasTrack = data.track || data.artist;
   const playing = !!data.playing;
 
@@ -110,12 +111,12 @@ function renderSpotify(data) {
     headerLabel.textContent = "🎵 Spotify";
     return;
   }
-  
+
   body.hidden = false;
   empty.hidden = true;
   livePill.hidden = !playing;
 
-  headerLabel.textContent = playing ? "🎵 Ouvindo agora" : "🎵 Última música";
+  headerLabel.textContent = playing ? "Ouvindo agora" : "Última música";
   cover.src = data.album_cover || FALLBACK.spotify.album_cover;
   cover.alt = data.track || "";
   track.textContent = data.track || "—";
@@ -137,10 +138,10 @@ function renderSpotify(data) {
   }
 
   if (playing) {
-    via.hidden = false;
-    via.textContent = "Reproduzindo via Spotify";
-  } else {
     via.hidden = true;
+  } else {
+    via.hidden = false;
+    via.textContent =" Reproduzido via Spotiy"
   }
 }
 

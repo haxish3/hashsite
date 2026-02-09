@@ -6,4 +6,4 @@ __pycache__/
 .venv/
 back/data/*
 !back/data/.gitkeep
-ideias.txt
+fiveserver.config.js

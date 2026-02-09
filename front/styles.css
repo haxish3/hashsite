@@ -110,7 +110,6 @@ img {
   font-variant-numeric: tabular-nums;
 }
 
-
 .card-main {
   padding: 0;
 }
@@ -131,16 +130,16 @@ img {
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   color: #9ca3af;
-  margin-bottom: 0.75rem;
 }
 
 .spotify-header .spotify-header-label {
-  flex-shrink: 0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #9ca3af;
 }
 
 .section-title-line {
@@ -225,7 +224,7 @@ img {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.15);
   color: #fff;
-  transform: scale(1.05);
+  transform: scale(1.07);
 }
 
 .social-link svg {
@@ -282,7 +281,7 @@ img {
 
 .spotify-link {
   width: 100%;
-  overflow: hidden;
+  overflow: auto;
   white-space: nowrap;
   position: relative;
   display: block;
@@ -302,7 +301,7 @@ img {
 }
 
 .spotify-track:hover {
-  transform: scale(1.07)
+  transform: scale(1.02)
 }
 
 .spotify-artist {
@@ -389,7 +388,7 @@ img {
 .spotify-via {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #1db954;
+  color: #717171cc;
   margin: 0;
 }
 
