@@ -1,5 +1,5 @@
-// const API_BASE = "http://localhost:8000";
-const API_BASE = "https://api.hwsh.rest"
+const API_BASE = "http://localhost:8000";
+// const API_BASE = "https://api.hwsh.rest"
 
 const FALLBACK = {
   discord: {
@@ -8,20 +8,12 @@ const FALLBACK = {
     avatar: "https://cdn.discordapp.com/embed/avatars/0.png",
   },
   spotify: {
-    playing: true,
-    track: "Música exemplo",
-    artist: "Artista",
-    album_cover: "https://placehold.co/64x64/1a1a2e/666?text=🎵",
-    embed_url: "",
-    progress: { current: 45, total: 180 },
+    playing: false,
   },
   roblox: {
-    online: true,
-    playing: true,
-    game: "None",
-    join_link: "None",
+    online: false,
   },
-  visitas: 42,
+  visitas: 6767,
 };
 
 const SOCIAL_LINKS = {
@@ -108,7 +100,7 @@ function renderSpotify(data) {
     empty.hidden = false;
     livePill.hidden = true;
     empty.querySelector(".spotify-empty-text").textContent = "Nenhuma música";
-    headerLabel.textContent = "🎵 Spotify";
+    headerLabel.textContent = "Spotify";
     return;
   }
 
@@ -141,7 +133,7 @@ function renderSpotify(data) {
     via.hidden = true;
   } else {
     via.hidden = false;
-    via.textContent =" Reproduzido via Spotiy"
+    via.textContent = "Reproduzido via Spotify"
   }
 }
 

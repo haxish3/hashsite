@@ -1,4 +1,4 @@
-from core import get_roblox, get_spotify, get_discord, get_visit, set_status, get_OnoF
+from core import get_roblox, get_spotify, get_discord, get_visits, set_status, get_OnoF
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
@@ -42,7 +42,7 @@ def _discord():
 
 @app.get("/visit")
 def _get_visit():
-    return get_visit()
+    return get_visits()
 
 
 @app.get("/status")

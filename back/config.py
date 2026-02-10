@@ -14,3 +14,6 @@ SPOTIFY_REDIRECT = os.getenv("SPOTIFY_REDIRECT", "http://127.0.0.1:8888/callback
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 DISCORD_ID = os.getenv("DISCORD_ID")
 DISCORD_API = "https://discord.com/api/v10/users/{user_id}"
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")

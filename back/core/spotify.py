@@ -1,16 +1,13 @@
+from .supabase import get_music_history, save_music_history
 from config import SPOTIFY_CLIENT, SPOTIFY_SECRET
 from colorthief import ColorThief
-from pathlib import Path
 from io import BytesIO
 import requests
 import base64
-import json
 import os
 
 
 REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
-
-path = Path("data/history_spot.json")
 
 
 def get_color(imgURL):
@@ -20,7 +17,8 @@ def get_color(imgURL):
         color_thief = ColorThief(img)
         cor = color_thief.get_color(quality=10)
         return f"{cor[0]}, {cor[1]}, {cor[2]}"
-    except:  # noqa
+    except Exception as e:
+        print(f"ERROR SPOT COLOR: {e}")
         return "30, 30, 30"
 
 
@@ -74,25 +72,27 @@ def get_spotify():
         item = track["item"]
 
     if track["is_playing"]:
-        with path.open("w") as f:
-            data = {
-                "playing": False,
-                "history": True,
+        save_music_history(
+            {
                 "track": item["name"],
                 "artist": item["artists"][0]["name"],
                 "album_cover": item["album"]["images"][0]["url"],
                 "track_url": item["external_urls"]["spotify"],
+            }
+        )
+    else:
+        history = get_music_history()
+        if history:
+            return {
+                "playing": False,
+                "history": True,
+                "track": history["track"],
+                "artist": history["artist"],
+                "album_cover": history["album_cover"],
+                "track_url": history["track_url"],
                 "color": "rgba(0, 0, 0, 0)",
             }
-            json.dump(data, f, indent=4)
-    else:
-        try:
-            with path.open("r") as f:
-                data = json.load(f)
-            return data
-        except FileNotFoundError:
-            print("ERROR SPOTIFY:     history not found")
-            return {"playing": False, "history": False}
+        return {"playing": False, "history": False}
 
     return {
         "playing": True,

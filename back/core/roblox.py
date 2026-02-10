@@ -1,9 +1,9 @@
+from .supabase import get_game_session, save_game_session, clear_game_session
 from config import ROBLOX_COOKIE, ROBLOX_USER_ID, ROBLOX_API
 from .spotify import get_color, opacityUpdate
 from datetime import datetime, timedelta  # noqa
 from pathlib import Path
 import requests
-import json
 
 session_path = Path("data/game_session.json")
 
@@ -18,20 +18,18 @@ def get_img(universeId):
 
 
 def get_session():
-    if session_path.exists():
-        with session_path.open("r") as f:
-            return json.load(f)
-    return {"gameId": 0, "startedAt": 0}
+    session = get_game_session()
+    if session:
+        return session
+    return {"gameName": 0, "startedAt": 0}
 
 
-def save_session(gameId, startedAt):
-    with session_path.open("w") as f:
-        save = {"gameId": gameId, "startedAt": startedAt}
-        json.dump(save, f)
+def save_session(gameName, startedAt):
+    save_game_session({"gameName": gameName, "startedAt": startedAt})
 
 
 def clear_session():
-    save_session(None, None)
+    clear_game_session()
 
 
 def get_roblox():
@@ -55,9 +53,9 @@ def get_roblox():
 
         session = get_session()
 
-        if session["gameId"] != gameId:
+        if session["gameName"] != gameName:
             started = datetime.now().isoformat()
-            save_session(gameId, started)
+            save_session(gameName, started)
         else:
             started = session["startedAt"]
 
@@ -74,6 +72,8 @@ def get_roblox():
             "elapse_sec": elapse if elapse else None,
         }
     elif status == 1:
+        
         return {"online": True, "playing": False}
     elif status == 0:
+        clear_session()
         return {"online": False}
