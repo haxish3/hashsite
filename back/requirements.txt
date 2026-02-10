@@ -4,3 +4,4 @@ spotipy
 requests
 colorthief
 python-dotenv
+supabase
