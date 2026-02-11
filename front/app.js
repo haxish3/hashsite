@@ -87,7 +87,12 @@ async function renderSpotify(data, skipTransition = false) {
   const playing = !!data.playing;
   
   const oldPlaying = spotifyCache ? !!spotifyCache.playing : null;
+  const oldTrack = spotifyCache ? spotifyCache.track : null;
+  const oldArtist = spotifyCache ? spotifyCache.artist : null;
+  
   const playStateChanged = oldPlaying !== null && oldPlaying !== playing;
+  const trackChanged = (oldTrack !== data.track) || (oldArtist !== data.artist);
+  const wentToNotPlaying = playStateChanged && !playing;
 
   const updateContent = () => {
     if (!hasTrack) {
@@ -133,11 +138,18 @@ async function renderSpotify(data, skipTransition = false) {
     }
   };
 
-  if (skipTransition || !playStateChanged) {
+  if (skipTransition || (!trackChanged && !playStateChanged)) {
     updateContent();
   } else {
-    spotifyHeader.classList.add('header-transitioning');
-    spotifyBody.classList.add('section-transitioning');
+    if (playStateChanged) {
+      spotifyHeader.classList.add('header-transitioning');
+    }
+    if (trackChanged) {
+      spotifyBody.classList.add('section-transitioning');
+    }
+    if (wentToNotPlaying) {
+      spotifyBody.classList.add('header-transitioning');
+    }
     
     await new Promise(resolve => requestAnimationFrame(resolve));
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -148,6 +160,7 @@ async function renderSpotify(data, skipTransition = false) {
     
     spotifyHeader.classList.remove('header-transitioning');
     spotifyBody.classList.remove('section-transitioning');
+    spotifyBody.classList.remove('header-transitioning');
   }
 }
 
@@ -282,6 +295,10 @@ async function updateLive() {
   const spotifyChanged = spotifyDataChanged(spotifyCache, live.spotify);
   if (spotifyChanged) {
     await renderSpotify(live.spotify, false);
+    stopSpotifyTimers();
+    if (live.spotify.playing && live.spotify.progress) {
+      startSpotifyTimers();
+    }
   }
   
   const robloxChanged = robloxDataChanged(robloxCache, live.roblox);
