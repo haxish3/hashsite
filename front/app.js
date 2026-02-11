@@ -211,7 +211,8 @@ function renderRoblox(data) {
   const imageUrl = data.image_url || "";
   const time = data.elapse_sec || 0;
 
-  if (!online || !playing) {
+  if (!playing) {
+    Rcolor.style.setProperty("--Rcolor", "rgba(0, 0, 0, 0)");
     body.hidden = true;
     offline.hidden = false;
     return;
