@@ -23,16 +23,14 @@ def _teste():
 def _roblox():
     if get_OnoF():
         return get_roblox()
-    else:
-        return {"online": False}
+    return {"online": False}
 
 
 @app.get("/spotify")
 def _spotify():
     if get_OnoF():
         return get_spotify()
-    else:
-        return {"playing": False}
+    return {"playing": False}
 
 
 @app.get("/discord")
@@ -53,3 +51,10 @@ def _get_all():
 @app.post("/toggle")
 def _toggle(status: bool):
     return set_status(status)
+
+
+@app.get("/live")
+def _get_live():
+    if get_OnoF():
+        return {"spotify": get_spotify(), "roblox": get_roblox()}
+    return {"spotify": {"playing": False}, "roblox": {"online": False}}
