@@ -332,6 +332,7 @@ async function init() {
   ]);
 
   renderDiscord(discord);
+  renderVisitas(visits);
   await renderSpotify(live.spotify, true);
   await renderRoblox(live.roblox, true);
   applySocialLinks();
