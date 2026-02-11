@@ -65,7 +65,10 @@ function fmtTime(sec) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-function renderSpotify(data) {
+async function renderSpotify(data, skipTransition = false) {
+  const spotifyHeader = document.querySelector('.spotify-header');
+  const spotifyBody = document.getElementById('spotify-body');
+  const card = document.querySelector('.card');
   const headerLabel = document.getElementById("spotify-header-label");
   const livePill = document.getElementById("spotify-live-wrapper");
   const body = document.getElementById("spotify-body");
@@ -79,52 +82,72 @@ function renderSpotify(data) {
   const totalEl = document.getElementById("spotify-total");
   const via = document.getElementById("spotify-via");
   const link = document.getElementById("spotify-link");
-  const card = document.querySelector(".card");
-
-
 
   const hasTrack = data.track || data.artist;
   const playing = !!data.playing;
+  
+  const oldPlaying = spotifyCache ? !!spotifyCache.playing : null;
+  const playStateChanged = oldPlaying !== null && oldPlaying !== playing;
 
-  if (!hasTrack) {
-    body.hidden = true;
-    empty.hidden = false;
-    livePill.hidden = true;
-    empty.querySelector(".spotify-empty-text").textContent = "Nenhuma música";
-    headerLabel.textContent = "Spotify";
-    return;
-  }
+  const updateContent = () => {
+    if (!hasTrack) {
+      body.hidden = true;
+      empty.hidden = false;
+      livePill.hidden = true;
+      empty.querySelector(".spotify-empty-text").textContent = "Nenhuma música";
+      headerLabel.textContent = "Spotify";
+      card.style.setProperty("--color", "rgba(0, 0, 0, 0)");
+      return;
+    }
 
-  body.hidden = false;
-  empty.hidden = true;
-  livePill.hidden = !playing;
+    body.hidden = false;
+    empty.hidden = true;
+    livePill.hidden = !playing;
 
-  headerLabel.textContent = playing ? "Ouvindo agora" : "Última música";
-  cover.src = data.album_cover || FALLBACK.spotify.album_cover;
-  cover.alt = data.track || "";
-  track.textContent = data.track || "—";
-  artist.textContent = data.artist || "—";
-  link.href = data.track_url || "open.spotify.com";
-  card.style.setProperty("--color", data.color);
+    headerLabel.textContent = playing ? "Ouvindo agora" : "Última música";
+    cover.src = data.album_cover || FALLBACK.spotify.album_cover;
+    cover.alt = data.track || "";
+    track.textContent = data.track || "—";
+    artist.textContent = data.artist || "—";
+    link.href = data.track_url || "open.spotify.com";
+    card.style.setProperty("--color", data.color || "rgba(0, 0, 0, 0)");
 
-  const progress = data.progress;
-  const hasProgress = progress && typeof progress.current === "number" && typeof progress.total === "number";
+    const progress = data.progress;
+    const hasProgress = progress && typeof progress.current === "number" && typeof progress.total === "number";
 
-  if (hasProgress && progress.total > 0) {
-    progressWrap.hidden = false;
-    const pct = Math.min(100, (progress.current / progress.total) * 100);
-    progressFill.style.width = `${pct}%`;
-    currentEl.textContent = fmtTime(progress.current);
-    totalEl.textContent = fmtTime(progress.total);
+    if (hasProgress && progress.total > 0) {
+      progressWrap.hidden = false;
+      const pct = Math.min(100, (progress.current / progress.total) * 100);
+      progressFill.style.width = `${pct}%`;
+      currentEl.textContent = fmtTime(progress.current);
+      totalEl.textContent = fmtTime(progress.total);
+    } else {
+      progressWrap.hidden = true;
+    }
+
+    if (playing) {
+      via.hidden = true;
+    } else {
+      via.hidden = false;
+      via.textContent = "Reproduzido via Spotify";
+    }
+  };
+
+  if (skipTransition || !playStateChanged) {
+    updateContent();
   } else {
-    progressWrap.hidden = true;
-  }
-
-  if (playing) {
-    via.hidden = true;
-  } else {
-    via.hidden = false;
-    via.textContent = "Reproduzido via Spotify"
+    spotifyHeader.classList.add('header-transitioning');
+    spotifyBody.classList.add('section-transitioning');
+    
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    updateContent();
+    
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    
+    spotifyHeader.classList.remove('header-transitioning');
+    spotifyBody.classList.remove('section-transitioning');
   }
 }
 
@@ -144,6 +167,7 @@ function tickSpotify() {
     return;
   }
 
+  // atualização da barra SEM transição (é incremental, não precisa)
   const pct = Math.min(100, (spotifyCache.progress.current / spotifyCache.progress.total) * 100);
   document.getElementById("spotify-progress-fill").style.width = `${pct}%`;
   document.getElementById("spotify-current").textContent = fmtTime(spotifyCache.progress.current);
@@ -162,7 +186,8 @@ function startSpotifyTimers() {
 }
 
 
-function renderRoblox(data) {
+async function renderRoblox(data, skipTransition = false) {
+  const robloxCard = document.querySelector(".card-roblox");
   const body = document.getElementById("roblox-body");
   const offline = document.getElementById("roblox-offline");
   const game = document.getElementById("roblox-game");
@@ -171,28 +196,38 @@ function renderRoblox(data) {
   const Rcolor = document.querySelector(".card-roblox");
   const elapse = document.querySelector('.roblox-time');
 
-  const online = !!data.online;
   const playing = !!data.playing;
-  const gameName = data.game || "—";
-  const joinLink = data.join_link || "#";
-  const imageUrl = data.image_url || "";
-  const time = data.elapse_sec || 0;
+  const oldPlaying = robloxCache ? !!robloxCache.playing : null;
+  const playStateChanged = oldPlaying !== null && oldPlaying !== playing;
 
-  if (!playing) {
-    Rcolor.style.setProperty("--Rcolor", "rgba(0, 0, 0, 0)");
-    body.hidden = true;
-    offline.hidden = false;
-    return;
+  const updateContent = () => {
+    if (!playing) {
+      Rcolor.style.setProperty("--Rcolor", "rgba(0, 0, 0, 0)");
+      body.hidden = true;
+      offline.hidden = false;
+      return;
+    }
+
+    body.hidden = false;
+    offline.hidden = true;
+    game.textContent = data.game || "—";
+    join.href = data.join_link || "#";
+    image.src = data.image_url || "";
+    join.hidden = false;
+    Rcolor.style.setProperty("--Rcolor", data.Rcolor || "rgba(0, 0, 0, 0)");
+    elapse.textContent = formatTime(data.elapse_sec || 0);
+  };
+
+  if (skipTransition || !playStateChanged) {
+    updateContent();
+  } else {
+    robloxCard.classList.add('section-transitioning');
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => setTimeout(resolve, 300));
+    updateContent();
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    robloxCard.classList.remove('section-transitioning');
   }
-
-  body.hidden = false;
-  offline.hidden = true;
-  game.textContent = gameName;
-  join.href = joinLink;
-  image.src = imageUrl;
-  join.hidden = false;
-  Rcolor.style.setProperty("--Rcolor", data.Rcolor);
-  elapse.textContent = formatTime(time);
 }
 
 function formatTime(seconds) {
@@ -216,13 +251,46 @@ async function loadLive() {
 }
 
 let liveInterval = null;
+let robloxCache = null;
+
+function spotifyDataChanged(oldData, newData) {
+  if (!oldData && !newData) return false;
+  if (!oldData || !newData) return true;
+  
+  return (
+    oldData.track !== newData.track ||
+    oldData.artist !== newData.artist ||
+    oldData.album_cover !== newData.album_cover ||
+    oldData.playing !== newData.playing
+  );
+}
+
+function robloxDataChanged(oldData, newData) {
+  if (!oldData && !newData) return false;
+  if (!oldData || !newData) return true;
+  
+  return (
+    oldData.game !== newData.game ||
+    oldData.playing !== newData.playing ||
+    oldData.image_url !== newData.image_url
+  );
+}
 
 async function updateLive() {
   const live = await loadLive();
-  renderSpotify(live.spotify);
-  renderRoblox(live.roblox);
+  
+  const spotifyChanged = spotifyDataChanged(spotifyCache, live.spotify);
+  if (spotifyChanged) {
+    await renderSpotify(live.spotify, false);
+  }
+  
+  const robloxChanged = robloxDataChanged(robloxCache, live.roblox);
+  if (robloxChanged) {
+    await renderRoblox(live.roblox, false);
+  }
 
   spotifyCache = live.spotify;
+  robloxCache = live.roblox;
 }
 
 function startLivePolling() {
@@ -264,12 +332,12 @@ async function init() {
   ]);
 
   renderDiscord(discord);
-  renderSpotify(live.spotify);
-  renderRoblox(live.roblox);
-  renderVisitas(visits);
+  await renderSpotify(live.spotify, true);
+  await renderRoblox(live.roblox, true);
   applySocialLinks();
 
   spotifyCache = live.spotify;
+  robloxCache = live.roblox;
   startSpotifyTimers();
   startLivePolling();
 }
