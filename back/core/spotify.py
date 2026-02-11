@@ -72,30 +72,36 @@ def get_spotify():
         item = track["item"]
 
     if track["is_playing"]:
-        save_music_history(
-            {
-                "track": item["name"],
-                "artist": item["artists"][0]["name"],
-                "album_cover": item["album"]["images"][0]["url"],
-                "track_url": item["external_urls"]["spotify"],
-            }
-        )
+        try:
+            save_music_history(
+                {
+                    "track": item["name"],
+                    "artist": item["artists"][0]["name"],
+                    "album_cover": item["album"]["images"][0]["url"],
+                    "track_url": item["external_urls"]["spotify"],
+                }
+            )
+            history_saved = True
+        except Exception as e:
+            history_saved = False
+            print(f"ERROR SPOT: DONT SAVED HISTORY --- {e}")
     else:
         history = get_music_history()
         if history:
             return {
                 "playing": False,
-                "history": True,
+                "has_history": True,
                 "track": history["track"],
                 "artist": history["artist"],
                 "album_cover": history["album_cover"],
                 "track_url": history["track_url"],
                 "color": "rgba(0, 0, 0, 0)",
             }
-        return {"playing": False, "history": False}
+        return {"playing": False, "has_history": False}
 
     return {
         "playing": True,
+        "history_saved": history_saved,
         "track": item["name"],
         "artist": item["artists"][0]["name"],
         "album_cover": item["album"]["images"][0]["url"],

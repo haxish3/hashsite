@@ -1,5 +1,5 @@
-const API_BASE = "http://localhost:8000";
-// const API_BASE = "https://api.hwsh.rest"
+// const API_BASE = "http://localhost:8000";
+const API_BASE = "https://api.hwsh.rest"
 
 const FALLBACK = {
   discord: {
@@ -57,15 +57,6 @@ function renderDiscord(data) {
   avatar.alt = globalName;
   nameEl.textContent = globalName;
   usernameEl.textContent = username;
-}
-
-async function loadSpotify() {
-  try {
-    const data = await get(`${API_BASE}/spotify`);
-    return data;
-  } catch {
-    return FALLBACK.spotify;
-  }
 }
 
 function fmtTime(sec) {
@@ -140,7 +131,6 @@ function renderSpotify(data) {
 
 let spotifyCache = null;
 let tickInterval = null;
-let pollInterval = null;
 let endTimeout = null;
 
 function tickSpotify() {
@@ -151,7 +141,6 @@ function tickSpotify() {
 
   if (spotifyCache.progress.current >= spotifyCache.progress.total) {
     stopSpotifyTimers();
-    fetchAndRenderSpotify();
     return;
   }
 
@@ -162,38 +151,16 @@ function tickSpotify() {
 
 function stopSpotifyTimers() {
   if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
-  if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
   if (endTimeout) { clearTimeout(endTimeout); endTimeout = null; }
 }
 
-async function fetchAndRenderSpotify() {
-  const data = await loadSpotify();
-  spotifyCache = data;
-  renderSpotify(data);
-  startSpotifyTimers();
-}
 
 function startSpotifyTimers() {
   stopSpotifyTimers();
 
-  if (!spotifyCache || !spotifyCache.playing) {
-    pollInterval = setInterval(fetchAndRenderSpotify, 60000);
-    return
-  }
-
   tickInterval = setInterval(tickSpotify, 1000);
-
-  pollInterval = setInterval(fetchAndRenderSpotify, 10000);
 }
 
-async function loadRoblox() {
-  try {
-    const data = await get(`${API_BASE}/roblox`);
-    return data;
-  } catch {
-    return FALLBACK.roblox;
-  }
-}
 
 function renderRoblox(data) {
   const body = document.getElementById("roblox-body");
@@ -236,22 +203,32 @@ function formatTime(seconds) {
   else return `${m} min`;
 }
 
-let intervalRoblox = null;
-
-async function updateCardR() {
-  const roblox = await loadRoblox();
-  renderRoblox(roblox);
-
+async function loadLive() {
+  try {
+    const data = await get(`${API_BASE}/live`);
+    return data
+  } catch {
+    return {
+      discord: FALLBACK.discord,
+      roblox: FALLBACK.roblox
+    };
+  }
 }
 
-function startRobloxPolling(data) {
-  if (intervalRoblox) clearInterval(intervalRoblox);
+let liveInterval = null;
 
-  if (data.playing) {
-    intervalRoblox = setInterval(updateCardR, 30000);
-  } else {
-    intervalRoblox = setInterval(updateCardR, 55000);
-  }
+async function updateLive() {
+  const live = await loadLive();
+  renderSpotify(live.spotify);
+  renderRoblox(live.roblox);
+
+  spotifyCache = live.spotify;
+}
+
+function startLivePolling() {
+  if (liveInterval) clearInterval(liveInterval);
+
+  liveInterval = setInterval(updateLive, 10000)
 }
 
 async function loadVisitas() {
@@ -280,22 +257,21 @@ function applySocialLinks() {
 }
 
 async function init() {
-  const [discord, spotify, roblox, visits] = await Promise.all([
+  const [discord, live, visits] = await Promise.all([
     loadDiscord(),
-    loadSpotify(),
-    loadRoblox(),
+    loadLive(),
     loadVisitas(),
   ]);
 
   renderDiscord(discord);
-  renderSpotify(spotify);
-  renderRoblox(roblox);
+  renderSpotify(live.spotify);
+  renderRoblox(live.roblox);
   renderVisitas(visits);
   applySocialLinks();
 
-  spotifyCache = spotify;
+  spotifyCache = live.spotify;
   startSpotifyTimers();
-  startRobloxPolling(roblox);
+  startLivePolling();
 }
 
 init();
