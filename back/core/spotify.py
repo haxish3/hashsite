@@ -1,5 +1,6 @@
 from .supabase import get_music_history, save_music_history
 from config import SPOTIFY_CLIENT, SPOTIFY_SECRET
+from datetime import datetime, timezone
 from colorthief import ColorThief
 from io import BytesIO
 import requests
@@ -88,6 +89,10 @@ def get_spotify():
     else:
         history = get_music_history()
         if history:
+            updated_at = datetime.fromisoformat(history["updated_at"].replace("+00", "+00:00"))
+            now = datetime.now(timezone.utc)
+            sec = int((now - updated_at).total_seconds())
+
             return {
                 "playing": False,
                 "has_history": True,
@@ -96,6 +101,7 @@ def get_spotify():
                 "album_cover": history["album_cover"],
                 "track_url": history["track_url"],
                 "color": "rgba(0, 0, 0, 0)",
+                "elapsed": sec
             }
         return {"playing": False, "has_history": False}
 
