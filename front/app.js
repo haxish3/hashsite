@@ -82,14 +82,15 @@ async function renderSpotify(data, skipTransition = false) {
   const totalEl = document.getElementById("spotify-total");
   const via = document.getElementById("spotify-via");
   const link = document.getElementById("spotify-link");
+  const slapse = document.getElementById("spotify-elapsed-time")
 
   const hasTrack = data.track || data.artist;
   const playing = !!data.playing;
-  
+
   const oldPlaying = spotifyCache ? !!spotifyCache.playing : null;
   const oldTrack = spotifyCache ? spotifyCache.track : null;
   const oldArtist = spotifyCache ? spotifyCache.artist : null;
-  
+
   const playStateChanged = oldPlaying !== null && oldPlaying !== playing;
   const trackChanged = (oldTrack !== data.track) || (oldArtist !== data.artist);
   const wentToNotPlaying = playStateChanged && !playing;
@@ -116,6 +117,8 @@ async function renderSpotify(data, skipTransition = false) {
     artist.textContent = data.artist || "—";
     link.href = data.track_url || "open.spotify.com";
     card.style.setProperty("--color", data.color || "rgba(0, 0, 0, 0)");
+    via.textContent = "Reproduzido via Spotify";
+    slapse.textContent = SformatTime(data.elapsed) || "";
 
     const progress = data.progress;
     const hasProgress = progress && typeof progress.current === "number" && typeof progress.total === "number";
@@ -132,9 +135,10 @@ async function renderSpotify(data, skipTransition = false) {
 
     if (playing) {
       via.hidden = true;
+      slapse.hidden = true
     } else {
+      slapse.hidden = false
       via.hidden = false;
-      via.textContent = "Reproduzido via Spotify";
     }
   };
 
@@ -150,24 +154,39 @@ async function renderSpotify(data, skipTransition = false) {
     if (wentToNotPlaying) {
       spotifyBody.classList.add('header-transitioning');
     }
-    
+
     await new Promise(resolve => requestAnimationFrame(resolve));
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     updateContent();
-    
+
     await new Promise(resolve => requestAnimationFrame(resolve));
-    
+
     spotifyHeader.classList.remove('header-transitioning');
     spotifyBody.classList.remove('section-transitioning');
     spotifyBody.classList.remove('header-transitioning');
   }
 }
 
+function SformatTime(sc) {
+  const m = Math.floor(sc / 60);
+  const h = Math.floor(m / 60);
+  const d = Math.floor(h / 24);
+  const mes = Math.floor(d / 30)
+
+
+  if (sc < 60) return `agora`;
+  if (m < 60) return `há ${m}m`;
+  if (h < 24) return `há ${h}h`;
+  if (d < 30) return `há ${d}d`;
+  if (mes < 12) return `há ${mes} ${mes === 1 ? 'mês' : 'meses'}`;
+  return `há 1a+`;
+}
 
 let spotifyCache = null;
 let tickInterval = null;
 let endTimeout = null;
+let elapsedInterval = null;
 
 function tickSpotify() {
   if (!spotifyCache || !spotifyCache.playing) return;
@@ -180,22 +199,38 @@ function tickSpotify() {
     return;
   }
 
-  // atualização da barra SEM transição (é incremental, não precisa)
   const pct = Math.min(100, (spotifyCache.progress.current / spotifyCache.progress.total) * 100);
   document.getElementById("spotify-progress-fill").style.width = `${pct}%`;
   document.getElementById("spotify-current").textContent = fmtTime(spotifyCache.progress.current);
 }
 
+function tickElapsed() {
+  if (!spotifyCache || spotifyCache.playing) return;
+  if (typeof spotifyCache.elapsed !== 'number') return;
+
+  spotifyCache.elapsed += 1;
+
+  const elapseEl = document.getElementById("spotify-elapsed-time");
+  if (elapseEl && !elapseEl.hidden) {
+    elapseEl.textContent = SformatTime(spotifyCache.elapsed);
+  }
+}
+
 function stopSpotifyTimers() {
   if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
   if (endTimeout) { clearTimeout(endTimeout); endTimeout = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
 }
 
 
 function startSpotifyTimers() {
   stopSpotifyTimers();
 
-  tickInterval = setInterval(tickSpotify, 1000);
+  if (spotifyCache && spotifyCache.playing) {
+    tickInterval = setInterval(tickSpotify, 1000);
+  } else if (spotifyCache && !spotifyCache.playing && spotifyCache.elapsed) {
+    elapsedInterval = setInterval(tickElapsed, 1000);
+  }
 }
 
 
@@ -244,8 +279,9 @@ async function renderRoblox(data, skipTransition = false) {
 }
 
 function formatTime(seconds) {
-  const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
+  const h = Math.floor(seconds / 3600);
+
 
   if (h > 0) return `${h}h ${m}m`;
   else return `${m} min`;
@@ -269,7 +305,7 @@ let robloxCache = null;
 function spotifyDataChanged(oldData, newData) {
   if (!oldData && !newData) return false;
   if (!oldData || !newData) return true;
-  
+
   return (
     oldData.track !== newData.track ||
     oldData.artist !== newData.artist ||
@@ -281,7 +317,7 @@ function spotifyDataChanged(oldData, newData) {
 function robloxDataChanged(oldData, newData) {
   if (!oldData && !newData) return false;
   if (!oldData || !newData) return true;
-  
+
   return (
     oldData.game !== newData.game ||
     oldData.playing !== newData.playing ||
@@ -291,7 +327,7 @@ function robloxDataChanged(oldData, newData) {
 
 async function updateLive() {
   const live = await loadLive();
-  
+
   const spotifyChanged = spotifyDataChanged(spotifyCache, live.spotify);
   if (spotifyChanged) {
     await renderSpotify(live.spotify, false);
@@ -300,7 +336,7 @@ async function updateLive() {
       startSpotifyTimers();
     }
   }
-  
+
   const robloxChanged = robloxDataChanged(robloxCache, live.roblox);
   if (robloxChanged) {
     await renderRoblox(live.roblox, false);

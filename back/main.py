@@ -19,20 +19,6 @@ def _teste():
     return {"online": get_OnoF()}
 
 
-@app.get("/roblox")
-def _roblox():
-    if get_OnoF():
-        return get_roblox()
-    return {"online": False}
-
-
-@app.get("/spotify")
-def _spotify():
-    if get_OnoF():
-        return get_spotify()
-    return {"playing": False}
-
-
 @app.get("/discord")
 def _discord():
     return get_discord()

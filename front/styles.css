@@ -1,4 +1,4 @@
-/* --- Reset & base --- */
+/* Reset & base */
 *,
 *::before,
 *::after {
@@ -32,7 +32,7 @@ img {
   height: auto;
 }
 
-/* --- Layout --- */
+/* Layout */
 .page {
   min-height: 100vh;
   display: flex;
@@ -71,13 +71,12 @@ img {
   backdrop-filter: blur(32px);
   backdrop-filter: blur(32px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.25rem !important;
+  border-radius: 1.1rem !important;
   padding: 1rem !important;
-  /* TRANSIÇÃO SUAVE DA COR DE FUNDO */
   transition: --color 1s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
@@ -101,8 +100,8 @@ img {
   max-height: 100px;
   overflow: hidden;
   transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .spotify-progress-wrap[hidden] {
@@ -111,12 +110,12 @@ img {
   margin-bottom: 0;
 }
 
-/* ANIMAÇÃO DE FADE-IN + SLIDE-UP para elementos internos */
 @keyframes fadeSlideIn {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -181,7 +180,7 @@ img {
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: #9ca3af;
-  /* transição suave na mudança de texto */
+
   transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -278,23 +277,23 @@ img {
   padding-top: 1rem;
   padding-bottom: 1.75rem;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-music .spotify-header {
   margin-bottom: 1.25rem;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .spotify-body {
   display: flex;
   gap: 1.25rem;
   align-items: flex-start;
-  /* transição de slide-fade */
+
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* ANIMAÇÃO quando o elemento aparece/muda */
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
   animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -305,6 +304,24 @@ img {
   overflow: hidden;
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.05);
+}
+
+.spotify-elapsed-time {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 2px 17px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  animation: fadeSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.spotify-elapsed-time:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+
 }
 
 .spotify-wrapper {
@@ -321,7 +338,6 @@ img {
   border-radius: 16px;
   position: relative;
   z-index: 2;
-  /* transição suave ao trocar a imagem */
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -331,7 +347,6 @@ img {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  /* ANIMAÇÃO quando o elemento aparece/muda */
   animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.05s backwards;
 }
 
@@ -373,15 +388,14 @@ img {
 
 .spotify-progress-wrap {
   margin-bottom: 0.5rem;
-  /* ANIMAÇÃO DE ENCOLHIMENTO quando desaparece */
+
   transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .spotify-progress-wrap[hidden] {
-  /* efeito de shrink ao invés de corte seco */
   max-height: 0;
   opacity: 0;
   margin-bottom: 0;
@@ -399,11 +413,10 @@ img {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 3px;
   background-color: rgba(28, 63, 29, 0.375);
   border: 1px solid rgba(76, 175, 80, 0.7);
-  border-radius: 0.6rem !important;
-  /* animação de fade ao aparecer */
+  padding: 2px 4px;
+  border-radius: 4px !important;
   animation: fadeSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -443,7 +456,7 @@ img {
   height: 100%;
   background: #4caf50;
   border-radius: 2px;
-  /* transição LINEAR pra barra de progresso (fica mais natural) */
+
   transition: width 0.3s linear;
 }
 
@@ -468,7 +481,7 @@ img {
 .spotify-empty {
   padding: 0.5rem 0;
   text-align: left;
-  /* animação ao aparecer */
+
   animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -489,8 +502,8 @@ img {
   background: linear-gradient(45deg, var(--Rcolor) 0%, #00000000 70%);
   padding: 1.75rem 2rem;
   transition: --Rcolor 0.5s ease-in-out,
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .roblox-body {
@@ -514,7 +527,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* transição suave ao trocar a imagem */
+
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -587,7 +600,7 @@ img {
   align-items: center;
   gap: 1.25rem;
   padding: 0.5rem 0;
-  /* animação ao aparecer */
+
   animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
