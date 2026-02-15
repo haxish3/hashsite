@@ -311,7 +311,7 @@ img {
   font-weight: 500;
   color: #9ca3af;
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 2px 17px;
+  padding: 4px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 4px !important;
   transition: all 0.2s ease-in-out;
