@@ -1,8 +1,8 @@
 # HashSite 🎵
 
-Um site de perfil dinâmico que integra informações em tempo real do Discord, Spotify e Roblox. Exibe seu status atual, música que está ouvindo e jogo que está jogando, tudo em um único lugar elegante.
+Um site de perfil dinâmico que integra informações em tempo real do Discord, Spotify e Roblox. Exibe seu status atual, música que está ouvindo e jogo que está jogando, tudo em um único lugar.
 
-**[Visite o site →](https://hashsite.vercel.app)**
+**[Visite o site →](https://hwsh.rest)**
 
 ---
 
@@ -10,9 +10,9 @@ Um site de perfil dinâmico que integra informações em tempo real do Discord, 
 
 - **Discord Integration**: Mostra seu avatar, nome global e username do Discord
 - **Spotify Now Playing**: Exibe a música que está ouvindo ou a última música tocada em tempo real
-- **Roblox Game Status**: Mostra qual jogo do Roblox você está jogando e há quanto tempo está jogando
+- **Roblox Game Status**: Mostra qual jogo do Roblox você está jogando e há quanto tempo
 - **Live Updates**: Dados atualizados dinamicamente sem necessidade de recarregar a página
-- **Design Responsivo**: Interface moderna e elegante que funciona em todos os dispositivos
+- **Design Responsivo**: Interface moderna que funciona em todos os dispositivos
 - **Analytics**: Contador de visitantes do site
 
 ---
@@ -20,21 +20,19 @@ Um site de perfil dinâmico que integra informações em tempo real do Discord, 
 ## 🛠️ Stack Tecnológico
 
 ### Frontend
-- **JavaScript** (27.9%) - Lógica e interatividade
-- **CSS** (26.9%) - Estilização moderna e responsiva
-- **HTML** (22.1%) - Estrutura
+- **JavaScript** — Lógica e interatividade
+- **CSS** — Estilização moderna e responsiva
+- **HTML** — Estrutura
 
 ### Backend
-- **Python** (23.1%) - API com FastAPI
-- **FastAPI** - Framework web rápido e moderno
-- **Spotipy** - Integração com Spotify
-- **Supabase** - Banco de dados e estatísticas
+- **FastAPI** — Framework web rápido e moderno
+- **Spotipy** — Integração com Spotify
+- **Supabase** — Banco de dados e estatísticas
 
 ---
 
 ## 📦 Requisitos
 
-### Backend
 - Python 3.8+
 - pip
 
@@ -81,8 +79,6 @@ pip install -r requirements.txt
 
 ### 3. Configurar Variáveis de Ambiente
 
-Copie `.env.example` para `.env` e preencha com suas credenciais:
-
 ```bash
 cp .env.example .env
 ```
@@ -97,23 +93,28 @@ A API estará disponível em `http://localhost:8000`
 
 ### 5. Executar Frontend
 
-```bash
-cd front
-# Abra index.html em um servidor local ou navegador
+Nas primeiras linhas do `front/app.js`, configure a URL da API:
+
+```js
+// linha 1 e 2
+const API_BASE = "http://localhost:8000"; // descomente essa pra rodar local
+// const API_BASE = "https://api.hwsh.rest"; // comente essa, ou troque pelo seu domínio
 ```
+
+Depois abra `index.html` em um servidor local ou navegador.
 
 ---
 
 ## 📋 Dependências Backend
 
 ```
-fastapi - Framework web
-uvicorn[standard] - Servidor ASGI
-spotipy - Integração Spotify
-requests - Requisições HTTP
-colorthief - Extração de cores
-python-dotenv - Variáveis de ambiente
-supabase - Cliente Supabase
+fastapi
+uvicorn[standard]
+spotipy
+requests
+colorthief
+python-dotenv
+supabase
 ```
 
 ---
@@ -137,10 +138,40 @@ supabase - Cliente Supabase
 2. Configure o cookie `.ROBLOSECURITY` (use a ferramenta de desenvolvedor)
 
 ### Supabase
-1. Crie uma conta em [Supabase](https://supabase.com)
-2. Crie um novo projeto
-3. Configure as tabelas de banco de dados
-4. Copie a URL e chave da API
+1. Crie uma conta em [Supabase](https://supabase.com) e crie um novo projeto
+2. Copie a URL e a chave `anon` do projeto em **Settings > API**
+3. No **SQL Editor**, crie as três tabelas abaixo:
+
+```sql
+-- Estatísticas gerais e controle da API
+create table stats (
+  id int primary key,
+  visits int default 0,
+  api_enabled boolean default true
+);
+insert into stats (id, visits, api_enabled) values (1, 0, true);
+
+-- Histórico da música atual do Spotify
+create table music_history (
+  id int primary key,
+  track text,
+  artist text,
+  album text,
+  image text,
+  url text
+);
+insert into music_history (id) values (1);
+
+-- Sessão de jogo atual do Roblox
+create table game_session (
+  id int primary key,
+  "gameName" text,
+  "startedAt" text
+);
+insert into game_session (id) values (1);
+```
+
+> Todas as tabelas trabalham com uma única linha de `id = 1` — o código sempre faz update nessa linha, nunca insere novas.
 
 ---
 
@@ -158,13 +189,13 @@ hashsite/
 │   │   └── __init__.py
 │   ├── main.py              # API principal
 │   ├── config.py            # Configurações
-│   ├── requirements.txt      # Dependências Python
-│   ├── vercel.json          # Configuração Vercel
-│   └── .env.example         # Exemplo de variáveis
+│   ├── requirements.txt
+│   ├── vercel.json
+│   └── .env.example
 ├── front/
-│   ├── index.html           # Página principal
-│   ├── app.js               # Lógica da aplicação
-│   └── styles.css           # Estilos
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
 └── README.md
 ```
 
@@ -172,9 +203,8 @@ hashsite/
 
 ## 🌐 Deploy
 
-O projeto está configurado para ser deployado no **Vercel**.
+O projeto está configurado para deploy no **Vercel**.
 
-### Deploy Automático
 1. Faça push para o repositório
 2. Conecte o repositório no Vercel
 3. Configure as variáveis de ambiente
@@ -184,41 +214,17 @@ O projeto está configurado para ser deployado no **Vercel**.
 
 ## 📊 Endpoints da API
 
-- `GET /discord` - Dados do Discord
-- `GET /spotify` - Dados do Spotify
-- `GET /roblox` - Status do Roblox
-- `GET /stats` - Estatísticas do site
+- `GET /discord` — Dados do Discord
+- `GET /live` — Status do Spotify e Roblox em tempo real
+- `GET /stats` — Estatísticas do site
+- `POST /toggle?status=true|false` — Liga ou desliga a API (quando desligada, `/live` retorna vazio)
 
 ---
 
 ## 🎨 Personalização
 
-### Cores
-As cores são extraídas dinamicamente das capas de álbum do Spotify usando `colorthief`
-
-### Temas
-Edite `styles.css` para personalizar cores, fontes e layout
-
----
-
-## 📝 Licença
-
-Este projeto é de código aberto. Sinta-se livre para usar, modificar e distribuir.
-
----
-
-## 🤝 Contribuições
-
-Contribuições são bem-vindas! Para grandes mudanças, abra uma issue primeiro para discutir o que você gostaria de mudar.
-
----
-
-## 📞 Suporte
-
-Encontrou um bug? Abra uma [issue](https://github.com/haxish3/hashsite/issues) ou entre em contato.
+As cores são extraídas dinamicamente das capas de álbum do Spotify via `colorthief`. Para customizar o visual, edite `front/styles.css`.
 
 ---
 
 **Made with ❤️ by haxish3**
-
-**[Visite o site →](https://hashsite.vercel.app)**
