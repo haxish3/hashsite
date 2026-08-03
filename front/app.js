@@ -1,5 +1,9 @@
-// const API_BASE = "http://localhost:8000";
-const API_BASE = "https://api.hwsh.rest"
+const HOSTNAME_MAP = {
+  "localhost": "http://localhost:8000",
+  "127.0.0.1": "http://localhost:8000",
+};
+
+const API_BASE = HOSTNAME_MAP[window.location.hostname] || "https://api.hwsh.rest";
 
 const FALLBACK = {
   discord: {

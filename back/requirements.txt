@@ -5,3 +5,4 @@ requests
 colorthief
 python-dotenv
 supabase
+dotenv

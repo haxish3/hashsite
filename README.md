@@ -1,121 +1,110 @@
-# HashSite 🎵
+# HashSite �🎵
 
-Um site de perfil dinâmico que integra informações em tempo real do Discord, Spotify e Roblox. Exibe seu status atual, música que está ouvindo e jogo que está jogando, tudo em um único lugar.
+HashSite é um perfil pessoal que junta Discord, Spotify e Roblox em uma página leve e intuitiva. A ideia é mostrar sua presença online de forma simples: avatar do Discord, o que está tocando no Spotify e qual jogo do Roblox está ativo.
 
-**[Visite o site →](https://hwsh.rest)**
-
----
-
-## ✨ Características
-
-- **Discord Integration**: Mostra seu avatar, nome global e username do Discord
-- **Spotify Now Playing**: Exibe a música que está ouvindo ou a última música tocada em tempo real
-- **Roblox Game Status**: Mostra qual jogo do Roblox você está jogando e há quanto tempo
-- **Live Updates**: Dados atualizados dinamicamente sem necessidade de recarregar a página
-- **Design Responsivo**: Interface moderna que funciona em todos os dispositivos
-- **Analytics**: Contador de visitantes do site
+**Visite o site** ou execute localmente para testar o fluxo em tempo real.
 
 ---
 
-## 🛠️ Stack Tecnológico
+## O que este projeto faz
+
+- Mostra informações públicas do Discord do usuário
+- Consulta a música atual ou a última música tocada no Spotify
+- Verifica o status do Roblox e exibe o jogo em andamento
+- Usa Supabase para armazenar histórico e estado do site
+- Atualiza o frontend automaticamente sem precisar recarregar
+
+---
+
+## O que mudou recentemente
+
+Este projeto recebeu melhorias importantes no backend para torná-lo mais confiável:
+
+- Tratamento de erros para APIs externas do Discord, Spotify e Roblox
+- Timeouts em requisições HTTP para evitar travamentos
+- Retornos seguros com fallback quando algum serviço estiver indisponível
+- Proteção extra no acesso ao Supabase para evitar falhas nas consultas
+
+Essas mudanças deixam a API mais resistente e o site mais estável em produção.
+
+---
+
+## Tecnologias
 
 ### Frontend
-- **JavaScript** — Lógica e interatividade
-- **CSS** — Estilização moderna e responsiva
-- **HTML** — Estrutura
+- HTML
+- CSS
+- JavaScript
 
 ### Backend
-- **FastAPI** — Framework web rápido e moderno
-- **Spotipy** — Integração com Spotify
-- **Supabase** — Banco de dados e estatísticas
+- FastAPI
+- Requests
+- Supabase
+- Spotify API
+- Discord API
 
 ---
 
-## 📦 Requisitos
+## Como rodar localmente
 
-- Python 3.8+
-- pip
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` no diretório `back/` com as seguintes variáveis:
-
-```env
-# Discord
-DISCORD_BOT_TOKEN=seu_token_aqui
-DISCORD_ID=seu_id_aqui
-
-# Roblox
-ROBLOX_COOKIE=seu_cookie_aqui
-ROBLOX_USER_ID=seu_user_id_aqui
-
-# Spotify
-SPOTIFY_CLIENT=seu_client_aqui
-SPOTIFY_SECRET=seu_secret_aqui
-SPOTIFY_REDIRECT=http://localhost:8000/callback
-
-# Supabase
-SUPABASE_URL=sua_url_aqui
-SUPABASE_KEY=sua_chave_aqui
-```
-
----
-
-## 🚀 Como Usar
-
-### 1. Clonar o Repositório
-
-```bash
-git clone https://github.com/haxish3/hashsite.git
-cd hashsite
-```
-
-### 2. Configurar Backend
+1. Entre na pasta do backend:
 
 ```bash
 cd back
+```
+
+2. Instale dependências:
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configurar Variáveis de Ambiente
+3. Crie o arquivo de ambiente:
 
 ```bash
 cp .env.example .env
 ```
 
-### 4. Executar Backend Localmente
+4. Preencha as variáveis no `back/.env`.
+
+5. Inicie o servidor:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-A API estará disponível em `http://localhost:8000`
-
-### 5. Executar Frontend
-
-Nas primeiras linhas do `front/app.js`, configure a URL da API:
-
-```js
-// linha 1 e 2
-const API_BASE = "http://localhost:8000"; // descomente essa pra rodar local
-// const API_BASE = "https://api.hwsh.rest"; // comente essa, ou troque pelo seu domínio
-```
-
-Depois abra `index.html` em um servidor local ou navegador.
+O backend ficará disponível em `http://localhost:8000`.
 
 ---
 
-## 📋 Dependências Backend
+## Configuração do frontend
 
-```
-fastapi
-uvicorn[standard]
-spotipy
-requests
-colorthief
-python-dotenv
-supabase
-```
+No `front/app.js`, a URL da API é definida automaticamente para `localhost` ou para o domínio remoto. Se quiser rodar localmente, apenas certifique-se de que `API_BASE` aponte para `http://localhost:8000`.
+
+---
+
+## Variáveis de ambiente
+
+Use `back/.env.example` como base. Algumas variáveis importantes:
+
+- `API_SECRET`
+- `DISCORD_BOT_TOKEN`
+- `DISCORD_ID`
+- `ROBLOX_COOKIE`
+- `ROBLOX_USER_ID`
+- `SPOTIFY_REFRESH_TOKEN`
+- `SPOTIFY_CLIENT`
+- `SPOTIFY_SECRET`
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+
+---
+
+## Observações
+
+- O arquivo `.env` não deve ser comitado.
+- Se alguma API estiver fora do ar, o backend retorna valores padrão ao frontend.
+- O projeto foi pensado para funcionar bem em deployment simples e também localmente.
 
 ---
 
@@ -190,7 +179,6 @@ hashsite/
 │   ├── main.py              # API principal
 │   ├── config.py            # Configurações
 │   ├── requirements.txt
-│   ├── vercel.json
 │   └── .env.example
 ├── front/
 │   ├── index.html
@@ -201,22 +189,11 @@ hashsite/
 
 ---
 
-## 🌐 Deploy
-
-O projeto está configurado para deploy no **Vercel**.
-
-1. Faça push para o repositório
-2. Conecte o repositório no Vercel
-3. Configure as variáveis de ambiente
-4. Deploy automático será acionado
-
----
-
 ## 📊 Endpoints da API
 
 - `GET /discord` — Dados do Discord
 - `GET /live` — Status do Spotify e Roblox em tempo real
-- `GET /stats` — Estatísticas do site
+- `GET /status` — Em produção
 - `POST /toggle?status=true|false` — Liga ou desliga a API (quando desligada, `/live` retorna vazio)
 
 ---

@@ -1,7 +1,9 @@
-from core import get_roblox, get_spotify, get_discord, get_visits, set_status, get_OnoF
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
+import secrets
 
+from config import API_SECRET
+from core import get_discord, get_OnoF, get_roblox, get_spotify, get_visits, set_status
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -12,6 +14,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def verify_api_key(x_api_key: str | None = Header(default=None)):
+    if (
+        x_api_key is None
+        or API_SECRET is None
+        or not secrets.compare_digest(x_api_key, API_SECRET)
+    ):
+        raise HTTPException(status_code=403, detail="forbidden")
 
 
 @app.get("/")
@@ -31,10 +42,10 @@ def _get_visit():
 
 @app.get("/status")
 def _get_all():
-    return "pornhub.com/"
+    return "In progress..."
 
 
-@app.post("/toggle")
+@app.post("/toggle", dependencies=[Depends(verify_api_key)])
 def _toggle(status: bool):
     return set_status(status)
 
@@ -42,5 +53,8 @@ def _toggle(status: bool):
 @app.get("/live")
 def _get_live():
     if get_OnoF():
-        return {"spotify": get_spotify(), "roblox": get_roblox()}
+        spotify_data = get_spotify()
+        roblox_data = get_roblox()
+        return {"spotify": spotify_data, "roblox": roblox_data}
+
     return {"spotify": {"playing": False}, "roblox": {"online": False}}

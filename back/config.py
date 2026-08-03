@@ -1,7 +1,10 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+API_SECRET = os.getenv("API_SECRET")
 
 ROBLOX_COOKIE = os.getenv("ROBLOX_COOKIE")
 ROBLOX_USER_ID = os.getenv("ROBLOX_USER_ID")

@@ -7,3 +7,4 @@ __pycache__/
 back/data/*
 !back/data/.gitkeep
 fiveserver.config.js
+vercel.json
