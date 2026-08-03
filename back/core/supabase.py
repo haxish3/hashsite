@@ -20,7 +20,7 @@ def _safe_execute(query):
 
 
 def get_visit():
-    result = _safe_execute(...)
+    result = _safe_execute(supa.table("stats").select("visits").eq("id", 1))
     if result and getattr(result, "data", None):
         return result.data[0].get("visits")
     return None
