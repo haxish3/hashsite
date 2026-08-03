@@ -20,16 +20,23 @@ def _safe_execute(query):
 
 
 def get_visit():
-    result = _safe_execute(supa.table("stats").select("visits").eq("id", 1))
+    result = _safe_execute(...)
     if result and getattr(result, "data", None):
-        return result.data[0].get("visits", 0)
-    return 0
+        return result.data[0].get("visits")
+    return None
 
 
 def add_visit():
     visit = get_visit()
-    _safe_execute(supa.table("stats").update({"visits": visit + 1}).eq("id", 1))
-    return visit + 1
+
+    if visit is None:
+        return None
+
+    result = _safe_execute(
+        supa.table("stats").update({"visits": visit + 1}).eq("id", 1)
+    )
+
+    return visit + 1 if result else None
 
 
 def get_music_history():
@@ -56,7 +63,9 @@ def save_game_session(data):
 
 def clear_game_session():
     _safe_execute(
-        supa.table("game_session").update({"gameName": None, "startedAt": None}).eq("id", 1)
+        supa.table("game_session")
+        .update({"gameName": None, "startedAt": None})
+        .eq("id", 1)
     )
 
 

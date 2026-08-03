@@ -64,7 +64,13 @@ def get_roblox():
         print(f"ERROR ROBLOX JSON: {e}")
         return {"online": False, "error": "invalid response"}
 
-    presence = data.get("userPresences", [{}])[0]
+    presences = data.get("userPresences") or []
+
+    if not presences:
+        return {"online": False, "error": "empty presence"}
+
+    presence = presences[0]
+
     status = presence.get("userPresenceType")
     gameName = presence.get("lastLocation")
     placeId = presence.get("placeId")
