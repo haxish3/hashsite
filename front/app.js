@@ -294,11 +294,12 @@ function formatTime(seconds) {
 async function loadLive() {
   try {
     const data = await get(`${API_BASE}/live`);
-    return data
+    return data;
   } catch {
     return {
       discord: FALLBACK.discord,
-      roblox: FALLBACK.roblox
+      spotify: FALLBACK.spotify,
+      roblox: FALLBACK.roblox,
     };
   }
 }
